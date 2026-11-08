@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign up</title>
+  <style>
+    :root {
+      --bg: #f4f5f9; --card: #ffffff; --text: #1b1d29; --muted: #6b7084;
+      --line: #e3e5ee; --accent: #5b5bf0; --accent-text: #ffffff;
+      --error: #d93a4a; --ok: #1f9d6b;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #12131a; --card: #1b1d29; --text: #eceef7; --muted: #9a9fb5;
+        --line: #2c2f42; --accent: #7c7cff; --accent-text: #12131a;
+        --error: #ff6b78; --ok: #3ecf94;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: grid; place-items: center;
+      padding: 24px 16px; background: var(--bg); color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+    .card {
+      width: 100%; max-width: 440px; background: var(--card);
+      border: 1px solid var(--line); border-radius: 16px; padding: 28px 24px;
+    }
+    h1 { font-size: 1.4rem; margin: 0 0 4px; }
+    .sub { margin: 0 0 20px; color: var(--muted); font-size: .92rem; }
+
+    /* progress */
+    .stepper { display: flex; list-style: none; margin: 0 0 14px; padding: 0; }
+    .dot { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .dot::before {
+      content: ""; position: absolute; top: 15px; left: -50%; width: 100%;
+      height: 3px; background: var(--line); transition: background .3s;
+    }
+    .dot:first-child::before { display: none; }
+    .dot.done::before, .dot.active::before { background: var(--accent); }
+    .circle {
+      position: relative; z-index: 1; width: 32px; height: 32px; border-radius: 50%;
+      display: grid; place-items: center; font-size: .85rem; font-weight: 600;
+      background: var(--card); border: 2px solid var(--line); color: var(--muted);
+      transition: all .3s;
+    }
+    .dot.active .circle { border-color: var(--accent); color: var(--accent); }
+    .dot.done .circle { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+    .label { font-size: .75rem; color: var(--muted); }
+    .dot.active .label, .dot.done .label { color: var(--text); }
+    .bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
+    .bar > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .35s ease; }
+    .count { margin: 8px 0 22px; font-size: .8rem; color: var(--muted); text-align: right; }
+
+    /* form */
+    .step[hidden], .success[hidden], .actions[hidden] { display: none; }
+    .step { animation: slide .3s ease; }
+    @keyframes slide { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+    .field { margin-bottom: 16px; }
+    label.title { display: block; font-size: .85rem; font-weight: 600; margin-bottom: 6px; }
+    input[type="text"], input[type="email"], input[type="password"] {
+      width: 100%; padding: 11px 12px; font: inherit; color: var(--text);
+      background: transparent; border: 1.5px solid var(--line); border-radius: 10px; outline: none;
+    }
+    input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+    .field.invalid input { border-color: var(--error); }
+    .error { margin: 6px 0 0; min-height: 1em; font-size: .85rem; font-weight: 600; color: var(--error); }
+    .field.invalid { animation: shake .35s ease; }
+    @keyframes shake {
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
+    .rules { margin: 8px 0 0; padding: 0; list-style: none; display: flex; gap: 14px; flex-wrap: wrap; font-size: .78rem; color: var(--muted); }
+    .rules li::before { content: "○ "; }
+    .rules li.met { color: var(--ok); }
+    .rules li.met::before { content: "✓ "; }
+    .pw { position: relative; }
+    .pw button {
+      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+      background: none; border: 0; color: var(--muted); font-size: .78rem; cursor: pointer; padding: 4px 6px;
+    }
+
+    .roles { display: grid; gap: 10px; }
+    .role {
+      display: flex; gap: 12px; align-items: center; padding: 12px 14px; cursor: pointer;
+      border: 1.5px solid var(--line); border-radius: 10px;
+    }
+    .role:has(input:checked) { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+    .role:has(input:focus-visible) { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+    .role strong { display: block; font-size: .92rem; }
+    .role span { font-size: .8rem; color: var(--muted); }
+
+    dl.summary { margin: 0 0 16px; border: 1px solid var(--line); border-radius: 10px; padding: 4px 14px; }
+    dl.summary div { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: .88rem; }
+    dl.summary div:last-child { border-bottom: 0; }
+    dl.summary dt { color: var(--muted); }
+    dl.summary dd { margin: 0; font-weight: 600; text-align: right; word-break: break-all; }
+    .check { display: flex; gap: 8px; align-items: flex-start; font-size: .85rem; }
+    .check input { margin-top: 3px; }
+
+    .actions { display: flex; gap: 10px; margin-top: 22px; }
+    button.btn {
+      flex: 1; padding: 12px 16px; font: inherit; font-weight: 600; border-radius: 10px;
+      cursor: pointer; border: 1.5px solid transparent;
+    }
+    button.primary { background: var(--accent); color: var(--accent-text); }
+    button.primary:hover { filter: brightness(1.08); }
+    button.ghost { background: transparent; color: var(--text); border-color: var(--line); }
+    button.ghost[hidden] { display: none; }
+    button.btn:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 40%, transparent); outline-offset: 2px; }
+
+    .success { text-align: center; padding: 14px 0 4px; }
+    .tick {
+      width: 56px; height: 56px; margin: 0 auto 14px; border-radius: 50%;
+      display: grid; place-items: center; font-size: 1.6rem; color: #fff; background: var(--ok);
+    }
+    .success h2 { margin: 0 0 6px; font-size: 1.2rem; }
+    .success p { margin: 0; color: var(--muted); font-size: .9rem; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    // ---------- Config ----------
+    const STEPS = ["Account", "Profile", "Role", "Confirm"];
+    const ROLES = [
+      { value: "personal", title: "Personal", desc: "For my own projects" },
+      { value: "team", title: "Team", desc: "Working with colleagues" },
+      { value: "business", title: "Business", desc: "For my company" },
+    ];
+
+    // ---------- Component: returns the markup ----------
+    const Signup = () => {
+      return `
+        <div class="card">
+          <h1>Create your account</h1>
+          <p class="sub">It only takes a minute.</p>
+
+          <ol class="stepper">
+            ${STEPS.map((label, i) => `
+              <li class="dot" data-dot="${i + 1}">
+                <span class="circle">${i + 1}</span>
+                <span class="label">${label}</span>
+              </li>`).join("")}
+          </ol>
+          <div class="bar"><i id="bar"></i></div>
+          <p class="count" id="count"></p>
+
+          <form id="signup-form" novalidate>
+            <section class="step" data-step="1">
+              <div class="field">
+                <label class="title" for="email">Email</label>
+                <input type="email" id="email" name="email" autocomplete="email" placeholder="you@example.com">
+                <p class="error" data-error-for="email"></p>
+              </div>
+              <div class="field">
+                <label class="title" for="password">Password</label>
+                <div class="pw">
+                  <input type="password" id="password" name="password" autocomplete="new-password" placeholder="At least 8 characters, 1 number">
+                  <button type="button" id="toggle-pw">Show</button>
+                </div>
+                <ul class="rules" id="pw-rules">
+                  <li data-rule="length">8+ characters</li>
+                  <li data-rule="number">1 number</li>
+                </ul>
+                <p class="error" data-error-for="password"></p>
+              </div>
+            </section>
+
+            <section class="step" data-step="2" hidden>
+              <div class="field">
+                <label class="title" for="name">Full name</label>
+                <input type="text" id="name" name="name" autocomplete="name" placeholder="Jane Doe">
+                <p class="error" data-error-for="name"></p>
+              </div>
+              <div class="field">
+                <label class="title" for="username">Username</label>
+                <input type="text" id="username" name="username" autocomplete="username" placeholder="jane_doe">
+                <p class="error" data-error-for="username"></p>
+              </div>
+            </section>
+
+            <section class="step" data-step="3" hidden>
+              <div class="field">
+                <span class="title" style="display:block;font-size:.85rem;font-weight:600;margin-bottom:8px">How will you use it?</span>
+                <div class="roles">
+                  ${ROLES.map(r => `
+                    <label class="role">
+                      <input type="radio" name="role" value="${r.value}">
+                      <div><strong>${r.title}</strong><span>${r.desc}</span></div>
+                    </label>`).join("")}
+                </div>
+                <p class="error" data-error-for="role"></p>
+              </div>
+            </section>
+
+            <section class="step" data-step="4" hidden>
+              <dl class="summary" id="summary"></dl>
+              <div class="field">
+                <label class="check">
+                  <input type="checkbox" id="terms" name="terms">
+                  <span>I agree to the Terms of Service and Privacy Policy.</span>
+                </label>
+                <p class="error" data-error-for="terms"></p>
+              </div>
+            </section>
+
+            <section class="success" id="success" hidden>
+              <div class="tick">✓</div>
+              <h2>You're all set!</h2>
+              <p id="success-msg"></p>
+            </section>
+
+            <div class="actions" id="actions">
+              <button type="button" class="btn ghost" id="back" hidden>Back</button>
+              <button type="submit" class="btn primary" id="next">Next</button>
+            </div>
+          </form>
+        </div>
+      `;
+    };
+
+    // ---------- Behaviour ----------
+    const mountSignup = () => {
+      const root = document.getElementById("app");
+      root.innerHTML = Signup();
+
+      const $ = (sel) => root.querySelector(sel);
+      const $$ = (sel) => [...root.querySelectorAll(sel)];
+      const form = $("#signup-form");
+      const TOTAL = STEPS.length;
+      const state = { step: 1, done: false, data: {} };
+
+      const setError = (name, message) => {
+        const el = $(`[data-error-for="${name}"]`);
+        if (el) el.textContent = message || "";
+        const field = el && el.closest(".field");
+        if (field) {
+          field.classList.remove("invalid");
+          if (message) { void field.offsetWidth; field.classList.add("invalid"); } // restart the shake
+        }
+      };
+
+      const updatePwRules = () => {
+        const pw = form.password.value;
+        $('[data-rule="length"]').classList.toggle("met", pw.length >= 8);
+        $('[data-rule="number"]').classList.toggle("met", /\d/.test(pw));
+      };
+
+      // each validator returns { fieldName: "message" } for every problem
+      const validators = {
+        1: () => {
+          const errors = {};
+          const email = form.email.value.trim();
+          const pw = form.password.value;
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "Enter a valid email address.";
+          if (pw.length < 8 || !/\d/.test(pw)) errors.password = "Use at least 8 characters including a number.";
+          return errors;
+        },
+        2: () => {
+          const errors = {};
+          if (form.name.value.trim().length < 2) errors.name = "Please enter your full name.";
+          if (!/^[a-z0-9_]{3,20}$/i.test(form.username.value.trim()))
+            errors.username = "3–20 characters: letters, numbers or underscores.";
+          return errors;
+        },
+        3: () => (form.role.value ? {} : { role: "Pick one to continue." }),
+        4: () => (form.terms.checked ? {} : { terms: "You need to accept to create your account." }),
+      };
+
+      const collect = () => {
+        state.data = {
+          email: form.email.value.trim(),
+          name: form.name.value.trim(),
+          username: form.username.value.trim(),
+          role: form.role.value,
+        };
+      };
+
+      const fillSummary = () => {
+        const roleTitle = (ROLES.find(r => r.value === state.data.role) || {}).title || "";
+        const rows = [["Email", state.data.email], ["Name", state.data.name], ["Username", "@" + state.data.username], ["Use", roleTitle]];
+        const dl = $("#summary");
+        dl.innerHTML = "";
+        rows.forEach(([k, v]) => {
+          const row = document.createElement("div");
+          const dt = document.createElement("dt");
+          const dd = document.createElement("dd");
+          dt.textContent = k;
+          dd.textContent = v; // textContent keeps user input safe
+          row.append(dt, dd);
+          dl.append(row);
+        });
+      };
+
+      const render = () => {
+        const { step, done } = state;
+
+        $$(".step").forEach(el => { el.hidden = done || Number(el.dataset.step) !== step; });
+        $("#success").hidden = !done;
+        $("#actions").hidden = done;
+
+        $$(".dot").forEach(el => {
+          const n = Number(el.dataset.dot);
+          const isDone = done || n < step;
+          el.classList.toggle("done", isDone);
+          el.classList.toggle("active", !done && n === step);
+          el.querySelector(".circle").textContent = isDone ? "✓" : n;
+        });
+
+        $("#bar").style.width = (done ? 100 : (step / TOTAL) * 100) + "%";
+        $("#count").textContent = done ? "Completed" : `Step ${step} of ${TOTAL}`;
+        $("#back").hidden = step === 1;
+        $("#next").textContent = step === TOTAL ? "Create account" : "Next";
+
+        if (!done) {
+          const first = $(`.step[data-step="${step}"] input`);
+          if (first) first.focus({ preventScroll: true });
+        }
+      };
+
+      // Next / Create account (also fires on Enter)
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const errors = validators[state.step]();
+        const names = {
+          1: ["email", "password"], 2: ["name", "username"], 3: ["role"], 4: ["terms"],
+        }[state.step];
+        names.forEach(n => setError(n, errors[n]));
+        if (Object.keys(errors).length) {
+          const bad = $(`.step[data-step="${state.step}"] .invalid input`);
+          if (bad) bad.focus();
+          return;
+        }
+
+        collect();
+
+        if (state.step < TOTAL) {
+          state.step += 1;
+          if (state.step === TOTAL) fillSummary();
+          render();
+        } else {
+          // TODO: send state.data (plus the password) to your API here
+          state.done = true;
+          $("#success-msg").textContent = `Welcome, ${state.data.name.split(" ")[0]}. We've sent a confirmation to ${state.data.email}.`;
+          render();
+        }
+      });
+
+      $("#back").addEventListener("click", () => {
+        if (state.step > 1) { state.step -= 1; render(); }
+      });
+
+      // clear an error as soon as the user fixes the field
+      form.addEventListener("input", (e) => {
+        if (e.target.name) setError(e.target.name, "");
+        if (e.target.name === "password") updatePwRules();
+      });
+
+      $("#toggle-pw").addEventListener("click", (e) => {
+        const show = form.password.type === "password";
+        form.password.type = show ? "text" : "password";
+        e.currentTarget.textContent = show ? "Hide" : "Show";
+      });
+
+      render();
+    };
+
+    mountSignup();
+  </script>
+</body>
+</html>
+chanje the js to typscript
