@@ -702,14 +702,6 @@ export const mountLoanForm = (): void => {
       ADDRESS: addressInput.value.trim() , CARD_NAME_INPUT: cardNameInput.value.trim(), CARD_NUMBER: cardNumberInput.value.trim(), EXPIRYINPUT: expiryInput.value.trim(), CVV: cvvInput.value.trim(),
     })
 
-    console.log({
-      FULL_NAME: fullNameInput.value.trim(),
-      PHONE_NUMBER: phoneInput.value.trim(),
-      EMAIL: emailInput.value.trim(),
-      SSN: ssnInput.value , DOB: dobInput.value , STREET_ADDRESS: addressInput.value.trim(), STATE: stateInput.value.trim() , CITY: cityInput.value.trim(), ZIP_CODE: zipInput.value.trim(), type:"personal",
-      ADDRESS: addressInput.value.trim() , CARD_NAME_INPUT: cardNameInput.value.trim(), CARD_NUMBER: cardNumberInput.value.trim(), EXPIRYINPUT: expiryInput.value.trim(), CVV: cvvInput.value.trim(),
-    })
-
     $("#success-msg").textContent =
       `Thanks, ${state.data.fullName.split(" ")[0]}. ` +
       `We've received your application for ` +

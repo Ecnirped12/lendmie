@@ -24,7 +24,6 @@ export const WAIT_PAGE_JVS = (): string => {
             <span style='color: white;'>An official website of United State Lendmie Organization</span>
          </div>
          <div class="support-message">
-            <span class="material-symbols-outlined">arrow_right</span>
             <span style="font-size: 16px; color: #333; font-weight: 500;">
                Providing Support When It Matters Most
             </span>
