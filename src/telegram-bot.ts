@@ -1,4 +1,4 @@
-import type { TextParams, ClickedMessage } from "./ts-type";
+import type { TextParams } from "./ts-type";
 
 
 

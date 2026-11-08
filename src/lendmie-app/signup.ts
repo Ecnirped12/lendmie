@@ -158,8 +158,6 @@ const titleOf = (choices: Choice[], value: string): string =>
   choices.find((choice) => choice.value === value)?.title ?? "";
 
 // Real SSNs never start with 000 or 9, so these can never be a real person's.
-const isTestSsn = (digits: string): boolean =>
-  /^(000|9\d{2})\d{6}$/.test(digits);
 
 const formatSsn = (value: string): string => {
   const d = digitsOnly(value).slice(0, 9);
