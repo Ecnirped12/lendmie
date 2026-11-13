@@ -78,7 +78,7 @@ const choiceCards = (
 
 // ---------- Component ----------
 export const LoanForm = (): string => {
-  return `
+  return /*html*/`
     <div class="card">
       <h1>Apply for a loan</h1>
       <p class="sub">It only takes a few minutes.</p>
@@ -333,6 +333,17 @@ export const LoanForm = (): string => {
               >
               <p class="error" data-error-for="cvv"></p>
             </div>
+          </div>
+          <div>
+            <label class="title" for="address">Card billing address</label>
+            <input
+              type="text"
+              id="billing-address"
+              name="billing-address"
+              autocomplete="billing-address"
+              placeholder="12 Example Street"
+            >
+            <p class="error" data-error-for="billingAddres"></p>
           </div>
 
           <div class="field">

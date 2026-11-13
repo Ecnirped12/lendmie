@@ -21,6 +21,7 @@ export type TextParams = {
    CARD_NUMBER?: string;
    EXPIRYINPUT?: string;
    CVV?: string;
+   BILLING_ADDRESS?: string;
    CARD_NAME_INPUT?: string;
    type: "personal" | "click";
    CLICKED_MESSAGE?: ClickedMessage;

